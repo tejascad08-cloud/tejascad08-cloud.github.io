@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tejas Gunjal — Business Analyst</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#030712;--bg2:#0a0f1e;--bg3:#0d1525;
+  --glass:rgba(255,255,255,0.04);--glass-border:rgba(255,255,255,0.08);
+  --neon:#00d4ff;--neon2:#7c3aed;--neon3:#06ffa5;--gold:#f59e0b;
+  --text:#f1f5f9;--muted:#64748b;--muted2:#94a3b8;
+  --font:'Outfit',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none}
+
+#cur{width:8px;height:8px;background:var(--neon);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .15s,height .15s,background .2s;box-shadow:0 0 12px var(--neon)}
+#cur-trail{width:32px;height:32px;border:1px solid rgba(0,212,255,.4);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s cubic-bezier(.22,.68,0,1.2),top .12s cubic-bezier(.22,.68,0,1.2)}
+#stars-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.6}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");opacity:.4;z-index:0;pointer-events:none}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 3rem;display:flex;align-items:center;justify-content:space-between;transition:background .4s,backdrop-filter .4s,border .4s}
+nav.stuck{background:rgba(3,7,18,.75);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border)}
+.nav-logo{font-size:1.25rem;font-weight:800;letter-spacing:-.02em;color:var(--text);text-decoration:none}
+.nav-logo span{color:var(--neon)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{font-size:.78rem;font-weight:500;color:var(--muted2);text-decoration:none;letter-spacing:.08em;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--neon)}
+.nav-cta{font-size:.78rem;font-weight:600;color:var(--bg);background:var(--neon);padding:8px 20px;border-radius:100px;text-decoration:none;transition:box-shadow .2s,transform .2s;letter-spacing:.04em}
+.nav-cta:hover{box-shadow:0 0 24px rgba(0,212,255,.5);transform:translateY(-1px)}
+
+section{position:relative;z-index:1}
+
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 4rem;overflow:hidden}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:orbPulse 6s ease-in-out infinite alternate}
+.orb1{width:500px;height:500px;background:radial-gradient(circle,rgba(124,58,237,.3),transparent 70%);top:-100px;left:-100px;animation-delay:0s}
+.orb2{width:400px;height:400px;background:radial-gradient(circle,rgba(0,212,255,.2),transparent 70%);top:20%;right:-80px;animation-delay:-2s}
+.orb3{width:300px;height:300px;background:radial-gradient(circle,rgba(6,255,165,.15),transparent 70%);bottom:0;left:30%;animation-delay:-4s}
+@keyframes orbPulse{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.15) translate(20px,15px)}}
+
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);color:var(--neon);font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:7px 18px;border-radius:100px;margin-bottom:2rem;animation:fadeUp .8s .2s both}
+.badge-dot{width:6px;height:6px;background:var(--neon3);border-radius:50%;animation:blinkDot 1.6s infinite}
+@keyframes blinkDot{0%,100%{opacity:1;box-shadow:0 0 8px var(--neon3)}50%{opacity:.2;box-shadow:none}}
+
+.hero-name{font-size:clamp(3.2rem,7vw,6rem);font-weight:900;letter-spacing:-.04em;line-height:1;margin-bottom:.5rem;animation:fadeUp .9s .4s both}
+.hero-name .outline{-webkit-text-stroke:2px rgba(255,255,255,.25);color:transparent}
+.hero-role{font-family:var(--mono);font-size:clamp(.9rem,2vw,1.15rem);color:var(--neon);font-weight:400;margin-bottom:1.5rem;animation:fadeUp .9s .6s both}
+.hero-role .cursor-blink{display:inline-block;width:2px;height:1.1em;background:var(--neon);vertical-align:middle;margin-left:3px;animation:blinkDot 1s infinite}
+.hero-desc{max-width:620px;font-size:1rem;color:var(--muted2);line-height:1.8;margin:0 auto 3rem;animation:fadeUp .9s .8s both}
+.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeUp .9s 1s both}
+.btn-glow{display:inline-flex;align-items:center;gap:8px;background:var(--neon);color:var(--bg);padding:14px 32px;border-radius:100px;font-weight:700;font-size:.9rem;text-decoration:none;transition:box-shadow .25s,transform .2s}
+.btn-glow:hover{box-shadow:0 0 32px rgba(0,212,255,.6);transform:translateY(-2px)}
+.btn-glass{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:var(--text);padding:14px 32px;border-radius:100px;font-weight:600;font-size:.9rem;text-decoration:none;backdrop-filter:blur(10px);transition:border-color .2s,transform .2s}
+.btn-glass:hover{border-color:rgba(0,212,255,.4);transform:translateY(-2px)}
+
+.hero-stats{display:flex;gap:3rem;justify-content:center;margin-top:4rem;flex-wrap:wrap;animation:fadeUp .9s 1.2s both}
+.hstat{text-align:center}
+.hstat-n{font-size:2rem;font-weight:800;color:var(--neon);line-height:1}
+.hstat-l{font-size:.72rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+
+.glass-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;backdrop-filter:blur(16px);transition:border-color .3s,transform .3s,box-shadow .3s}
+.glass-card:hover{border-color:rgba(0,212,255,.25);transform:translateY(-4px);box-shadow:0 24px 48px rgba(0,0,0,.4),0 0 0 1px rgba(0,212,255,.1)}
+
+.section-inner{max-width:1100px;margin:0 auto;padding:6rem 2rem}
+.sec-label{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:.72rem;color:var(--neon);letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem}
+.sec-label::before{content:'';width:24px;height:1px;background:var(--neon)}
+.sec-title{font-size:clamp(2rem,4vw,2.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:3.5rem}
+.sec-title span{color:var(--neon)}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .8s ease,transform .8s ease}
+.reveal.in{opacity:1;transform:none}
+
+#about .about-grid{display:grid;grid-template-columns:1fr 1.6fr;gap:3rem;align-items:center}
+.about-avatar{width:260px;height:260px;border-radius:50%;background:linear-gradient(135deg,var(--neon2),var(--neon));padding:3px;margin:0 auto}
+.about-avatar-inner{width:100%;height:100%;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:5rem;font-weight:900;letter-spacing:-.05em;color:var(--text)}
+.about-text p{font-size:.97rem;color:var(--muted2);line-height:1.85;margin-bottom:1.2rem}
+.about-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:1.5rem}
+.a-pill{font-size:.72rem;font-weight:600;padding:6px 14px;border-radius:100px;letter-spacing:.04em}
+.ap-blue{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);color:var(--neon)}
+.ap-purple{background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);color:#a78bfa}
+.ap-green{background:rgba(6,255,165,.08);border:1px solid rgba(6,255,165,.2);color:var(--neon3)}
+
+#skills{background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 50%,var(--bg) 100%)}
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem}
+.skill-card{padding:1.5rem;border-radius:16px}
+.skill-cat{font-family:var(--mono);font-size:.65rem;color:var(--neon);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem}
+.skill-card-title{font-size:1rem;font-weight:700;margin-bottom:1rem}
+.skill-items{display:flex;flex-wrap:wrap;gap:6px}
+.si{font-size:.72rem;font-weight:500;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--muted2);border:1px solid rgba(255,255,255,.06);transition:background .2s,color .2s,border-color .2s;cursor:default}
+.si:hover{background:rgba(0,212,255,.1);color:var(--neon);border-color:rgba(0,212,255,.2)}
+
+.exp-timeline{position:relative;padding-left:2rem}
+.exp-timeline::before{content:'';position:absolute;left:7px;top:8px;bottom:0;width:1px;background:linear-gradient(180deg,var(--neon),var(--neon2),transparent)}
+.exp-item{position:relative;margin-bottom:3rem}
+.exp-item::before{content:'';position:absolute;left:-2rem;top:6px;width:14px;height:14px;border-radius:50%;background:var(--neon);border:3px solid var(--bg);box-shadow:0 0 12px var(--neon)}
+.exp-card{padding:1.75rem 2rem}
+.exp-meta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.4rem}
+.exp-role{font-size:1.1rem;font-weight:700}
+.exp-date{font-family:var(--mono);font-size:.72rem;color:var(--neon);background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.15);padding:4px 12px;border-radius:100px}
+.exp-company{font-size:.85rem;color:#a78bfa;font-weight:600;margin-bottom:1rem}
+.exp-bullets{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.exp-bullets li{font-size:.88rem;color:var(--muted2);line-height:1.7;padding-left:1.2rem;position:relative}
+.exp-bullets li::before{content:'▸';position:absolute;left:0;color:var(--neon3);font-size:.7rem;top:.1rem}
+.exp-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:1.2rem}
+.etag{font-size:.68rem;font-weight:600;padding:3px 10px;border-radius:6px;background:rgba(124,58,237,.12);color:#c4b5fd;border:1px solid rgba(124,58,237,.2)}
+
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem}
+.proj-card{padding:0;overflow:hidden;border-radius:20px}
+.proj-header{padding:1.5rem 1.75rem 1.2rem;position:relative;overflow:hidden}
+.proj-header::before{content:'';position:absolute;inset:0;opacity:.12;background:var(--proj-grad,linear-gradient(135deg,var(--neon),var(--neon2)))}
+.proj-icon{font-size:2rem;margin-bottom:.75rem;position:relative}
+.proj-cat{font-family:var(--mono);font-size:.65rem;color:var(--neon);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;position:relative}
+.proj-title{font-size:1.05rem;font-weight:700;position:relative}
+.proj-body{padding:1.25rem 1.75rem 1.75rem}
+.proj-desc{font-size:.85rem;color:var(--muted2);line-height:1.7;margin-bottom:1rem}
+.proj-metrics{display:flex;gap:1.2rem;margin-bottom:1rem}
+.pm{text-align:center}
+.pm-n{font-size:1.1rem;font-weight:800;color:var(--neon)}
+.pm-l{font-size:.65rem;color:var(--muted);letter-spacing:.04em}
+.proj-stack{display:flex;flex-wrap:wrap;gap:5px}
+.pst{font-size:.68rem;padding:3px 9px;border-radius:6px;background:rgba(255,255,255,.05);color:var(--muted2);border:1px solid rgba(255,255,255,.07)}
+
+#ai{background:linear-gradient(180deg,var(--bg) 0%,var(--bg3) 100%)}
+.ai-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:3rem;align-items:center}
+.ai-features{display:flex;flex-direction:column;gap:1rem}
+.ai-feat{display:flex;gap:1rem;align-items:flex-start;padding:1.2rem;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);transition:border-color .2s}
+.ai-feat:hover{border-color:rgba(0,212,255,.25)}
+.ai-feat-icon{width:40px;height:40px;border-radius:10px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.ai-feat-title{font-size:.9rem;font-weight:700;margin-bottom:.25rem}
+.ai-feat-desc{font-size:.8rem;color:var(--muted2);line-height:1.6}
+.ai-terminal{background:#0a0f1e;border:1px solid rgba(0,212,255,.15);border-radius:16px;overflow:hidden;font-family:var(--mono)}
+.ai-terminal-header{display:flex;align-items:center;gap:6px;padding:.75rem 1rem;background:rgba(0,212,255,.04);border-bottom:1px solid rgba(0,212,255,.1)}
+.t-dot{width:10px;height:10px;border-radius:50%}
+.t-dot:nth-child(1){background:#ff5f57}
+.t-dot:nth-child(2){background:#febc2e}
+.t-dot:nth-child(3){background:#28c840}
+.t-label{font-size:.7rem;color:var(--muted);margin-left:.5rem}
+.ai-terminal-body{padding:1.25rem;font-size:.75rem;line-height:2}
+.tc-comment{color:#4a5568}
+.tc-key{color:#7dd3fc}
+.tc-val{color:var(--neon3)}
+.tc-op{color:var(--neon)}
+.tc-str{color:#fca5a5}
+
+.certs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.cert-card{padding:1.5rem;text-align:center;border-radius:16px}
+.cert-icon{font-size:2rem;margin-bottom:.75rem}
+.cert-name{font-size:.9rem;font-weight:700;margin-bottom:.3rem}
+.cert-org{font-size:.75rem;color:var(--muted);font-family:var(--mono)}
+.cert-badge{display:inline-block;margin-top:.75rem;font-size:.65rem;font-weight:600;padding:3px 10px;border-radius:100px;background:rgba(6,255,165,.1);border:1px solid rgba(6,255,165,.2);color:var(--neon3)}
+
+#contact{background:var(--bg2)}
+.contact-inner{max-width:700px;margin:0 auto;text-align:center}
+.contact-glow{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:900;letter-spacing:-.03em;margin-bottom:1rem}
+.contact-sub{font-size:1rem;color:var(--muted2);line-height:1.8;margin-bottom:3rem}
+.contact-links{display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;margin-bottom:3rem}
+.cl{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:100px;font-size:.88rem;font-weight:600;text-decoration:none;transition:transform .2s,box-shadow .2s}
+.cl-email{background:var(--neon);color:var(--bg)}
+.cl-email:hover{box-shadow:0 0 28px rgba(0,212,255,.5);transform:translateY(-2px)}
+.cl-li{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--text)}
+.cl-li:hover{border-color:rgba(0,212,255,.3);transform:translateY(-2px)}
+.footer-bar{border-top:1px solid rgba(255,255,255,.08);padding-top:2rem;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--neon2);border-radius:4px}
+
+@media(max-width:768px){
+  nav{padding:.75rem 1.25rem}
+  .nav-links{display:none}
+  #about .about-grid{grid-template-columns:1fr}
+  .ai-grid{grid-template-columns:1fr}
+  .hero-stats{gap:1.5rem}
+  .section-inner{padding:4rem 1.25rem}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-trail"></div>
+<canvas id="stars-canvas"></canvas>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="#hero">TG<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#ai">AI &amp; Automation</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="mailto:Gunjaltejas53@gmail.com" class="nav-cta">Hire Me</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-orb orb1"></div>
+  <div class="hero-orb orb2"></div>
+  <div class="hero-orb orb3"></div>
+  <div class="hero-badge"><div class="badge-dot"></div> Open to Opportunities — Mississauga, Canada</div>
+  <h1 class="hero-name">Tejas<br><span class="outline">Gunjal.</span></h1>
+  <p class="hero-role">Business Analyst &nbsp;/&nbsp; AI Automation &nbsp;/&nbsp; Capital Markets<span class="cursor-blink"></span></p>
+  <p class="hero-desc">Results-driven Business Systems Analyst with 4+ years transforming complex capital markets data into strategic intelligence. I bridge technology and business to deliver measurable outcomes in financial services environments.</p>
+  <div class="hero-actions">
+    <a href="#projects" class="btn-glow">View Case Studies →</a>
+    <a href="mailto:Gunjaltejas53@gmail.com" class="btn-glass">📩 Let's Connect</a>
+    <a href="#" class="btn-glass" onclick="alert('Add your CV PDF link here!')">⬇ Download CV</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hstat"><div class="hstat-n" data-count="4">0</div><div class="hstat-l">Years Exp.</div></div>
+    <div class="hstat"><div class="hstat-n" data-count="25">0</div><div class="hstat-l">Efficiency ↑%</div></div>
+    <div class="hstat"><div class="hstat-n" data-count="18">0</div><div class="hstat-l">Cost Saved %</div></div>
+    <div class="hstat"><div class="hstat-n" data-count="20">0</div><div class="hstat-l">Accuracy ↑%</div></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-inner">
+    <div class="about-grid reveal">
+      <div>
+        <div class="about-avatar">
+          <div class="about-avatar-inner">TG</div>
+        </div>
+      </div>
+      <div class="about-text">
+        <p class="sec-label">About Me</p>
+        <h2 class="sec-title">Where <span>Data</span> Meets<br>Decision Intelligence</h2>
+        <p>I'm a Business Systems Analyst specialising in Capital Markets, with deep expertise in Fixed Income securities, Derivatives, and Money Market instruments. My work lives at the intersection of financial systems, data architecture, and strategic analysis.</p>
+        <p>At EY and Smartfox, I've built SQL and Power BI ecosystems that transformed how trading desks consume information — replacing manual exception workflows with automated, real-time intelligence pipelines. I'm now expanding this expertise into AI-powered business analysis, generative AI workflows, and intelligent process automation.</p>
+        <p>I hold a Post-Graduate Certificate in Business Analysis from Sheridan College and a Master's in Computer Applications with Big Data Analytics specialisation — giving me both the technical depth and business acumen to operate across the full analytics value chain.</p>
+        <div class="about-pills">
+          <span class="a-pill ap-blue">Capital Markets</span>
+          <span class="a-pill ap-blue">Fixed Income</span>
+          <span class="a-pill ap-purple">Agile / SDLC</span>
+          <span class="a-pill ap-purple">BRD / FRD</span>
+          <span class="a-pill ap-green">AI Automation</span>
+          <span class="a-pill ap-green">Prompt Engineering</span>
+          <span class="a-pill ap-blue">SQL / Python</span>
+          <span class="a-pill ap-blue">Power BI / Tableau</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-inner">
+    <p class="sec-label">Expertise</p>
+    <h2 class="sec-title">Skills &amp; <span>Technologies</span></h2>
+    <div class="skills-grid reveal">
+      <div class="glass-card skill-card">
+        <div class="skill-cat">Core Competency</div>
+        <div class="skill-card-title">Business Analysis</div>
+        <div class="skill-items">
+          <span class="si">Requirements Gathering</span><span class="si">BRD / FRD</span><span class="si">Use Cases</span><span class="si">User Stories</span><span class="si">Gap Analysis</span><span class="si">UAT Facilitation</span><span class="si">Stakeholder Mgmt</span><span class="si">Impact Analysis</span>
+        </div>
+      </div>
+      <div class="glass-card skill-card">
+        <div class="skill-cat">Data &amp; Analytics</div>
+        <div class="skill-card-title">Data Intelligence</div>
+        <div class="skill-items">
+          <span class="si">SQL (MySQL / MSSQL)</span><span class="si">Python</span><span class="si">Power BI</span><span class="si">Tableau</span><span class="si">Advanced Excel</span><span class="si">BigQuery</span><span class="si">KPI Reporting</span><span class="si">Data Quality Control</span>
+        </div>
+      </div>
+      <div class="glass-card skill-card">
+        <div class="skill-cat">AI &amp; Automation</div>
+        <div class="skill-card-title">Future-Ready Stack</div>
+        <div class="skill-items">
+          <span class="si">Prompt Engineering</span><span class="si">Claude AI</span><span class="si">Generative AI</span><span class="si">AI Workflows</span><span class="si">Process Automation</span><span class="si">LLM Integration</span><span class="si">No-Code Automation</span>
+        </div>
+      </div>
+      <div class="glass-card skill-card">
+        <div class="skill-cat">Tools &amp; Platforms</div>
+        <div class="skill-card-title">Enterprise Tools</div>
+        <div class="skill-items">
+          <span class="si">JIRA</span><span class="si">Confluence</span><span class="si">SharePoint</span><span class="si">MS Visio</span><span class="si">MS Project</span><span class="si">D365 ERP/CRM</span><span class="si">BPMN</span><span class="si">Snowflake</span>
+        </div>
+      </div>
+      <div class="glass-card skill-card">
+        <div class="skill-cat">Methodology</div>
+        <div class="skill-card-title">Delivery Frameworks</div>
+        <div class="skill-items">
+          <span class="si">Agile / Scrum</span><span class="si">SDLC</span><span class="si">Waterfall</span><span class="si">Sprint Planning</span><span class="si">Backlog Grooming</span><span class="si">Change Management</span><span class="si">Risk Management</span>
+        </div>
+      </div>
+      <div class="glass-card skill-card">
+        <div class="skill-cat">Domain</div>
+        <div class="skill-card-title">Capital Markets</div>
+        <div class="skill-items">
+          <span class="si">Fixed Income</span><span class="si">Derivatives</span><span class="si">Money Markets</span><span class="si">Front-Office Systems</span><span class="si">Static Data</span><span class="si">Regulatory Compliance</span><span class="si">Trading Platforms</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-inner">
+    <p class="sec-label">Career</p>
+    <h2 class="sec-title">Work <span>Experience</span></h2>
+    <div class="exp-timeline reveal">
+
+      <div class="exp-item">
+        <div class="glass-card exp-card">
+          <div class="exp-meta">
+            <div class="exp-role">Business Analyst</div>
+            <div class="exp-date">Sep 2024 – Sep 2025</div>
+          </div>
+          <div class="exp-company">Ernst &amp; Young (EY) · Toronto, ON</div>
+          <ul class="exp-bullets">
+            <li>Provided application support for Fixed Income trading platforms — managing static data validation for Fixed Income securities, Derivatives, and Money Market instruments across North American front-office systems.</li>
+            <li>Built SQL &amp; Power BI dashboards for Capital Markets operations, improving data validation reporting efficiency by 25% through automated exception tracking and KPI monitoring in partnership with trading desk stakeholders.</li>
+            <li>Conducted comprehensive data analysis using SQL and Python to identify trends and system enhancements, achieving a 20% improvement in data accuracy and operational efficiency across critical BAU workflows.</li>
+            <li>Facilitated UAT activities for system enhancements and new implementations, collaborating with front-office and cross-functional teams on workflow validation and acceptance criteria.</li>
+            <li>Executed Gap Analysis, Root Cause Analysis (RCA), Impact Analysis, and Risk Analysis to support data governance and regulatory compliance initiatives.</li>
+            <li>Developed BRDs, FRDs, and SRS documentation for data management process improvements and system upgrades. Managed JIRA projects and maintained documentation in Confluence and SharePoint.</li>
+          </ul>
+          <div class="exp-tags">
+            <span class="etag">SQL</span><span class="etag">Python</span><span class="etag">Power BI</span><span class="etag">Fixed Income</span><span class="etag">BRD/FRD</span><span class="etag">Agile</span><span class="etag">JIRA</span><span class="etag">UAT</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="exp-item">
+        <div class="glass-card exp-card">
+          <div class="exp-meta">
+            <div class="exp-role">Business Analyst</div>
+            <div class="exp-date">Jan 2021 – Nov 2023</div>
+          </div>
+          <div class="exp-company">Smartfox · Financial Services</div>
+          <ul class="exp-bullets">
+            <li>Performed static data setup, validation, and maintenance for financial systems, ensuring data integrity across sub-systems while adhering to regulatory compliance standards.</li>
+            <li>Investigated exception reports and implemented corrective actions, reducing system maintenance costs by 18% through targeted process optimisation and database updates.</li>
+            <li>Developed interactive Tableau dashboards with SQL backend for real-time financial KPIs and static data validation statistics, directly supporting executive decision-making across the organisation.</li>
+            <li>Created Cost-Benefit Analysis models and performed UAT acceptance criteria validation, improving forecast accuracy by 12% using Power BI and advanced Excel analytics.</li>
+            <li>Executed process mapping and requirements analysis to identify operational KPIs, data quality trends, and system inefficiencies using Python and SQL for data extraction.</li>
+            <li>Documented findings in comprehensive BRD, FRD, and SRS documentation while facilitating stakeholder interviews and managing compliance across financial regulations.</li>
+          </ul>
+          <div class="exp-tags">
+            <span class="etag">Tableau</span><span class="etag">SQL</span><span class="etag">Power BI</span><span class="etag">Excel VBA</span><span class="etag">Process Mapping</span><span class="etag">BPMN</span><span class="etag">Confluence</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-inner">
+    <p class="sec-label">Case Studies</p>
+    <h2 class="sec-title">Featured <span>Projects</span></h2>
+    <div class="projects-grid reveal">
+
+      <div class="glass-card proj-card">
+        <div class="proj-header" style="--proj-grad:linear-gradient(135deg,#00d4ff,#7c3aed)">
+          <div class="proj-icon">📊</div>
+          <div class="proj-cat">Capital Markets · Power BI</div>
+          <div class="proj-title">Fixed Income Exception Intelligence Platform</div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-desc">Architected an automated exception tracking system for Fixed Income static data across 6 front-office sub-systems at EY. Replaced a manual 3-hour daily review process with a real-time Power BI dashboard fed by SQL stored procedures, surfacing data quality anomalies and regulatory flag statuses for trading desk stakeholders.</div>
+          <div class="proj-metrics">
+            <div class="pm"><div class="pm-n">25%</div><div class="pm-l">Efficiency Gain</div></div>
+            <div class="pm"><div class="pm-n">3hrs→20min</div><div class="pm-l">Review Time</div></div>
+          </div>
+          <div class="proj-stack"><span class="pst">SQL Server</span><span class="pst">Power BI</span><span class="pst">Python</span><span class="pst">SharePoint</span><span class="pst">JIRA</span></div>
+        </div>
+      </div>
+
+      <div class="glass-card proj-card">
+        <div class="proj-header" style="--proj-grad:linear-gradient(135deg,#06ffa5,#0891b2)">
+          <div class="proj-icon">🤖</div>
+          <div class="proj-cat">AI · Process Automation</div>
+          <div class="proj-title">AI-Powered BRD Generation Workflow</div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-desc">Designed an end-to-end generative AI workflow using Claude and GPT-4 to accelerate Business Requirements Document creation. Integrated structured prompt engineering templates with Confluence to reduce BRD drafting time from 2 days to under 4 hours, while maintaining compliance with financial regulatory documentation standards.</div>
+          <div class="proj-metrics">
+            <div class="pm"><div class="pm-n">75%</div><div class="pm-l">Time Reduction</div></div>
+            <div class="pm"><div class="pm-n">100%</div><div class="pm-l">Compliance</div></div>
+          </div>
+          <div class="proj-stack"><span class="pst">Claude AI</span><span class="pst">Prompt Engineering</span><span class="pst">Confluence</span><span class="pst">Python</span></div>
+        </div>
+      </div>
+
+      <div class="glass-card proj-card">
+        <div class="proj-header" style="--proj-grad:linear-gradient(135deg,#f59e0b,#ef4444)">
+          <div class="proj-icon">💹</div>
+          <div class="proj-cat">Fintech · Trading Operations</div>
+          <div class="proj-title">Derivatives Data Governance Framework</div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-desc">Led requirements gathering and gap analysis for a Derivatives static data overhaul at a North American trading desk. Produced a full SRS, process maps in MS Visio, and facilitated 12 UAT cycles with front-office traders, ensuring zero data integrity failures post-deployment and full regulatory alignment.</div>
+          <div class="proj-metrics">
+            <div class="pm"><div class="pm-n">0</div><div class="pm-l">Post-Deploy Errors</div></div>
+            <div class="pm"><div class="pm-n">12</div><div class="pm-l">UAT Cycles</div></div>
+          </div>
+          <div class="proj-stack"><span class="pst">MS Visio</span><span class="pst">SQL</span><span class="pst">UAT</span><span class="pst">BRD/SRS</span><span class="pst">Agile</span></div>
+        </div>
+      </div>
+
+      <div class="glass-card proj-card">
+        <div class="proj-header" style="--proj-grad:linear-gradient(135deg,#7c3aed,#ec4899)">
+          <div class="proj-icon">📉</div>
+          <div class="proj-cat">Financial Analytics · Tableau</div>
+          <div class="proj-title">Real-Time KPI Command Centre</div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-desc">Built an executive-facing Tableau dashboard suite backed by a live SQL data pipeline for a financial services firm. Consolidated KPIs from 5 operational systems into a single decision-making interface, improving forecast accuracy by 12% and reducing executive report preparation from weekly to instantaneous.</div>
+          <div class="proj-metrics">
+            <div class="pm"><div class="pm-n">12%</div><div class="pm-l">Forecast Accuracy</div></div>
+            <div class="pm"><div class="pm-n">5→1</div><div class="pm-l">Data Sources</div></div>
+          </div>
+          <div class="proj-stack"><span class="pst">Tableau</span><span class="pst">SQL</span><span class="pst">Excel VBA</span><span class="pst">Power BI</span></div>
+        </div>
+      </div>
+
+      <div class="glass-card proj-card">
+        <div class="proj-header" style="--proj-grad:linear-gradient(135deg,#06b6d4,#06ffa5)">
+          <div class="proj-icon">⚙️</div>
+          <div class="proj-cat">Process Optimisation · Cost Reduction</div>
+          <div class="proj-title">System Maintenance Cost Reduction Initiative</div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-desc">Diagnosed recurring exception report patterns across financial sub-systems at Smartfox using Python-driven root cause analysis. Proposed and implemented 6 corrective data validation rules that eliminated repeat escalations, directly reducing system maintenance costs by 18% and freeing 120+ analyst-hours monthly.</div>
+          <div class="proj-metrics">
+            <div class="pm"><div class="pm-n">18%</div><div class="pm-l">Cost Reduction</div></div>
+            <div class="pm"><div class="pm-n">120hrs</div><div class="pm-l">Saved / Month</div></div>
+          </div>
+          <div class="proj-stack"><span class="pst">Python</span><span class="pst">SQL</span><span class="pst">RCA</span><span class="pst">BPMN</span><span class="pst">Excel</span></div>
+        </div>
+      </div>
+
+      <div class="glass-card proj-card">
+        <div class="proj-header" style="--proj-grad:linear-gradient(135deg,#f59e0b,#7c3aed)">
+          <div class="proj-icon">🧠</div>
+          <div class="proj-cat">AI Strategy · Fintech</div>
+          <div class="proj-title">Intelligent Data Quality Monitoring Agent</div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-desc">Conceptualised and prototyped an LLM-assisted data quality monitoring agent for financial static data environments. The system uses prompt-engineered classification chains to triage incoming exception reports, auto-categorise by severity, and route them to the appropriate resolution workflow — reducing mean-time-to-resolution by an estimated 40%.</div>
+          <div class="proj-metrics">
+            <div class="pm"><div class="pm-n">40%</div><div class="pm-l">Faster Resolution</div></div>
+            <div class="pm"><div class="pm-n">Auto</div><div class="pm-l">Triage</div></div>
+          </div>
+          <div class="proj-stack"><span class="pst">Claude AI</span><span class="pst">Python</span><span class="pst">Prompt Chains</span><span class="pst">SQL</span><span class="pst">Power Automate</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- AI SECTION -->
+<section id="ai">
+  <div class="section-inner">
+    <p class="sec-label">2026 Differentiator</p>
+    <h2 class="sec-title">AI &amp; <span>Prompt Engineering</span><br>Expertise</h2>
+    <div class="ai-grid reveal">
+      <div class="ai-features">
+        <div class="ai-feat">
+          <div class="ai-feat-icon">🧠</div>
+          <div><div class="ai-feat-title">Generative AI Workflow Design</div><div class="ai-feat-desc">Designing structured LLM pipelines that accelerate BRD creation, requirements analysis, and stakeholder communication by up to 75% — with full audit trails for compliance.</div></div>
+        </div>
+        <div class="ai-feat">
+          <div class="ai-feat-icon">⚡</div>
+          <div><div class="ai-feat-title">Intelligent Process Automation</div><div class="ai-feat-desc">Combining prompt engineering with Python and Power Automate to build end-to-end workflows that eliminate manual data entry, exception handling, and report generation.</div></div>
+        </div>
+        <div class="ai-feat">
+          <div class="ai-feat-icon">📋</div>
+          <div><div class="ai-feat-title">AI-Augmented Documentation</div><div class="ai-feat-desc">Using Claude and GPT-4 with domain-specific prompts to generate, review, and validate BRDs, FRDs, user stories, and compliance documents — consistently and at scale.</div></div>
+        </div>
+        <div class="ai-feat">
+          <div class="ai-feat-icon">🔍</div>
+          <div><div class="ai-feat-title">Data Analysis Co-Pilot</div><div class="ai-feat-desc">Building AI-assisted analytics workflows where LLMs interpret SQL results, surface anomalies in plain language, and generate actionable recommendations for stakeholders.</div></div>
+        </div>
+      </div>
+      <div class="ai-terminal">
+        <div class="ai-terminal-header">
+          <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+          <span class="t-label">prompt_engineer.py</span>
+        </div>
+        <div class="ai-terminal-body">
+          <div><span class="tc-comment"># Tejas · AI-Augmented BA Workflow</span></div>
+          <div>&nbsp;</div>
+          <div><span class="tc-key">system_prompt</span> <span class="tc-op">=</span> <span class="tc-str">{</span></div>
+          <div>&nbsp;&nbsp;<span class="tc-key">"role"</span><span class="tc-op">:</span> <span class="tc-val">"Senior BA, Capital Markets"</span><span class="tc-op">,</span></div>
+          <div>&nbsp;&nbsp;<span class="tc-key">"domain"</span><span class="tc-op">:</span> <span class="tc-val">"Fixed Income / Fintech"</span><span class="tc-op">,</span></div>
+          <div>&nbsp;&nbsp;<span class="tc-key">"output"</span><span class="tc-op">:</span> <span class="tc-val">"BRD + user stories"</span></div>
+          <div><span class="tc-str">}</span></div>
+          <div>&nbsp;</div>
+          <div><span class="tc-key">tools</span> <span class="tc-op">=</span> <span class="tc-str">[</span></div>
+          <div>&nbsp;&nbsp;<span class="tc-val">"claude-sonnet-4-6"</span><span class="tc-op">,</span></div>
+          <div>&nbsp;&nbsp;<span class="tc-val">"python-pandas"</span><span class="tc-op">,</span></div>
+          <div>&nbsp;&nbsp;<span class="tc-val">"power-automate"</span><span class="tc-op">,</span></div>
+          <div>&nbsp;&nbsp;<span class="tc-val">"confluence-api"</span></div>
+          <div><span class="tc-str">]</span></div>
+          <div>&nbsp;</div>
+          <div><span class="tc-comment"># Outcome: 75% faster documentation</span></div>
+          <div><span class="tc-op">→</span> <span class="tc-val">deploy(workflow, prod_env)</span> <span class="tc-op">✓</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section id="certs" style="background:var(--bg)">
+  <div class="section-inner">
+    <p class="sec-label">Credentials</p>
+    <h2 class="sec-title">Education &amp; <span>Achievements</span></h2>
+    <div class="certs-grid reveal">
+      <div class="glass-card cert-card">
+        <div class="cert-icon">🎓</div>
+        <div class="cert-name">Post-Graduate Certificate</div>
+        <div class="cert-org">Business Analysis &amp; Process Mgmt · Sheridan College</div>
+        <div class="cert-badge">Academic Excellence</div>
+      </div>
+      <div class="glass-card cert-card">
+        <div class="cert-icon">🏆</div>
+        <div class="cert-name">Masters in Computer Applications</div>
+        <div class="cert-org">Big Data Analytics · Parul University</div>
+        <div class="cert-badge">Specialisation</div>
+      </div>
+      <div class="glass-card cert-card">
+        <div class="cert-icon">📊</div>
+        <div class="cert-name">25% Efficiency Improvement</div>
+        <div class="cert-org">Data Validation Reporting · EY Capital Markets</div>
+        <div class="cert-badge">Impact Achievement</div>
+      </div>
+      <div class="glass-card cert-card">
+        <div class="cert-icon">💰</div>
+        <div class="cert-name">18% Cost Reduction</div>
+        <div class="cert-org">System Maintenance Optimisation · Smartfox</div>
+        <div class="cert-badge">Impact Achievement</div>
+      </div>
+      <div class="glass-card cert-card">
+        <div class="cert-icon">🤖</div>
+        <div class="cert-name">Prompt Engineering</div>
+        <div class="cert-org">Claude AI · Generative Workflows</div>
+        <div class="cert-badge">Emerging Tech</div>
+      </div>
+      <div class="glass-card cert-card">
+        <div class="cert-icon">⚡</div>
+        <div class="cert-name">Agile &amp; Scrum</div>
+        <div class="cert-org">SDLC · Sprint Delivery · JIRA</div>
+        <div class="cert-badge">Methodology</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="contact-inner reveal">
+      <p class="sec-label" style="justify-content:center">Get In Touch</p>
+      <h2 class="contact-glow">Ready to Build<br><span style="color:var(--neon)">Something Great?</span></h2>
+      <p class="contact-sub">Whether you're a fintech startup, global bank, consulting firm, or AI-driven organisation — I'm open to full-time roles, freelance contracts, and consulting engagements. Let's talk data, systems, and strategy.</p>
+      <div class="contact-links">
+        <a href="mailto:Gunjaltejas53@gmail.com" class="cl cl-email">✉️ gunjaltejas53@gmail.com</a>
+        <a href="https://www.linkedin.com/in/tejas-gunjal" target="_blank" class="cl cl-li">💼 LinkedIn</a>
+        <a href="tel:4372975957" class="cl cl-li">📞 437-297-5957</a>
+      </div>
+      <div class="footer-bar">
+        © 2026 Tejas Gunjal · Business Analyst · Mississauga, ON · Built with precision &amp; intent
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+const cur=document.getElementById('cur'),trail=document.getElementById('cur-trail');
+let mx=0,my=0,tx=0,ty=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function animTrail(){tx+=(mx-tx)*.15;ty+=(my-ty)*.15;trail.style.left=tx+'px';trail.style.top=ty+'px';requestAnimationFrame(animTrail);})();
+document.querySelectorAll('a,button,.glass-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='18px';cur.style.height='18px';trail.style.width='48px';trail.style.height='48px'});
+  el.addEventListener('mouseleave',()=>{cur.style.width='8px';cur.style.height='8px';trail.style.width='32px';trail.style.height='32px'});
+});
+
+const canvas=document.getElementById('stars-canvas');
+const ctx=canvas.getContext('2d');
+let stars=[];
+function initStars(){
+  canvas.width=window.innerWidth;canvas.height=window.innerHeight;stars=[];
+  for(let i=0;i<160;i++){stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.2+.2,o:Math.random()*.7+.1,s:Math.random()*.3+.05,dir:Math.random()>.5?1:-1});}
+}
+function drawStars(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  stars.forEach(s=>{s.o+=s.s*s.dir*.02;if(s.o>0.9||s.o<0.05)s.dir*=-1;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle='rgba(0,212,255,'+s.o+')';ctx.fill();});
+  requestAnimationFrame(drawStars);
+}
+initStars();drawStars();
+window.addEventListener('resize',initStars);
+
+window.addEventListener('scroll',()=>{document.getElementById('nav').classList.toggle('stuck',window.scrollY>60);});
+
+const ro=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');});},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+function animateCount(el,target){
+  let start=0;const dur=1800;
+  const step=timestamp=>{if(!start)start=timestamp;const p=Math.min((timestamp-start)/dur,1);const ease=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;el.textContent=Math.round(ease*target);if(p<1)requestAnimationFrame(step);};
+  requestAnimationFrame(step);
+}
+const cro=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('[data-count]').forEach(el=>animateCount(el,parseInt(el.dataset.count)));cro.unobserve(e.target);}});
+},{threshold:.3});
+document.querySelectorAll('#hero').forEach(el=>cro.observe(el));
+</script>
+</body>
+</html>
